@@ -66,7 +66,8 @@ def detect(save_img=False):
         torch.backends.cudnn.benchmark = True  # set True to speed up constant image size inference
         dataset = LoadStreams(source, img_size=img_size)
     else:
-        save_img = True
+        view_img = True
+        #save_img = True
         dataset = LoadImages(source, img_size=img_size)
 
     # Get names and colors
@@ -110,7 +111,9 @@ def detect(save_img=False):
 
             save_path = str(Path(out) / Path(p).name)
             s += '%gx%g ' % img.shape[2:]  # print string
-            gn = torch.tensor(im0s.shape)[[1, 0, 1, 0]]  #  normalization gain whwh
+            if isinstance(im0s, list):
+                im0s = np.array(im0s)
+            gn = torch.tensor(im0s.shape)[[1, 0, 1, 0]]  #  normalization gain whwh
             if det is not None and len(det):
                 # Rescale boxes from img_size to im0 size
                 det[:, :4] = scale_coords(img.shape[2:], det[:, :4], im0.shape).round()
