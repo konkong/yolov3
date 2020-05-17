@@ -61,14 +61,19 @@ def detect(save_img=False):
 
     # Set Dataloader
     vid_path, vid_writer = None, None
+    video_frame = 0
     if webcam:
         view_img = False
         save_img = True
         torch.backends.cudnn.benchmark = True  # set True to speed up constant image size inference
         dataset = LoadStreams(source, img_size=img_size)
+        dataset.mode = 'streams'
     else:
         save_img = True
         dataset = LoadImages(source, img_size=img_size)
+    
+    output_size = (640, 480)
+    output_movie = cv2.VideoWriter("VideoTest1.avi", cv2.VideoWriter_fourcc('I', '4', '2', '0'), 24, output_size)
 
     # Get names and colors
     names = load_classes(opt.names)
@@ -147,6 +152,20 @@ def detect(save_img=False):
             if save_img:
                 if dataset.mode == 'images':
                     cv2.imwrite(save_path, im0)
+                elif dataset.mode == 'streams':
+                    if im0 is None:
+                        continue
+                        
+                    im0 = cv2.resize(im0, output_size)
+                    output_movie.write(im0)
+                    
+                    #cv2.imshow('http', im0)
+                    cv2.waitKey(10)
+                    video_frame += 1
+                    if video_frame >= 500: # save a short video stream
+                        output_movie.release()
+                        #cv2.destroyAllWindows()
+                        raise StopIteration
                 else:
                     if vid_path != save_path:  # new video
                         vid_path = save_path
