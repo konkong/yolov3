@@ -66,8 +66,7 @@ def detect(save_img=False):
         torch.backends.cudnn.benchmark = True  # set True to speed up constant image size inference
         dataset = LoadStreams(source, img_size=img_size)
     else:
-        view_img = True
-        #save_img = True
+        save_img = True
         dataset = LoadImages(source, img_size=img_size)
 
     # Get names and colors
